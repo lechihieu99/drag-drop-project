@@ -4,26 +4,105 @@ import TabBar from './components/TabBar/TabBar';
 import HeadBar from './components/TabBar/HeadBar';
 import LeftNav from './components/LeftNav/LeftNav';
 import RightNav from './components/RightNav/RightNav';
+import Whitespace from './components/Whitespace/Whitespace';
 
 import { Draggable, Droppable } from 'react-drag-and-drop'
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
-
+  const [data, setData] = useState([]);
+  const [update, setUpdate] = useState(0);
   const [showRightNav, setShowRightNav] = useState(false)
+  // const [mouseUpPosition, setMouseUpPosition] = useState({x: 0, y: 0});
+  
+  const [elementSelected, setElementSelected] = useState([]);
 
-  const [elementSelected, setElementSelected] = useState({
-    type: '',
-    width: '',
-    height: '',
-    x: '',
-    y: '',
-    data: ''
-  })
-
-  const onDrop = (data) => {
-    console.log(data)
+  const addElement = (typeName) => {
+    setData(prev => {
+      const newEl = {
+        type: typeName,
+        x: 100,
+        y: 100,
+        dw: 60,
+        dh: 60,
+        w: 60,
+        h: 50,
+        isSelected: false,
+        z: 2,
+      };
+      console.log(newEl);
+      let typeFound = prev.find((type) => type.typeName === typeName);
+      // Not found type 
+      if (!typeFound) {
+        typeFound = {
+          typeId: data.length + 1,
+          typeName,
+          list: [{...newEl, id:1}],
+        };
+        prev.push(typeFound);
+        return prev;
+      }
+      // Found type
+      else{
+        typeFound.list.push({ ...newEl, id: typeFound.list.length + 1 });
+        return prev;
+      }
+    })
+    setUpdate(prev => prev+1);
   }
+
+  const updateElement = (type, id, values, syncValues) => {
+    setData((prev) =>
+      prev.map(typeBlock => {
+        // Update values inside this type Blockblock
+        if (typeBlock.typeName===type){
+          typeBlock.list = typeBlock.list.map(el => {
+            if (el.id === id) return { ...el, ...values };
+            if (syncValues) return {...el, ...syncValues};
+            return el;
+          })
+          return typeBlock;
+        }
+        if (syncValues) {
+          typeBlock.list = typeBlock.list.map((el) => {
+            return { ...el, ...syncValues };
+          });
+          return typeBlock;
+        }
+        return typeBlock;
+      })
+      // prev.map((coor) => {
+        //   if (coor.id === id) return { ...coor, ...values };
+        //   if (syncValues) return { ...coor, ...syncValues };
+        //   return coor;
+        // })
+    );
+    setUpdate(prev => prev+1);
+  };
+
+  
+  const onDrop = (value) => {
+    addElement(value.components);
+
+  }
+  
+  // useEffect(() => {
+  //   const handleUp = (event) => {
+
+  //       console.log('on mouse up')
+  //     // if (!showRightNav) return;
+  //     // const whitespace = document.querySelector(".whitespace");
+  //     // const rect = whitespace?.getBoundingClientRect();
+  //     // mouseXRelative = event.clientX - rect.left;
+  //     // mouseYRelative = rect.height - (event.clientY - rect.top);
+  //     // setMouseUpPosition({x: mouseXRelative, y: mouseYRelative})
+  //   };
+  //   document.addEventListener("mouseup", handleUp, true);
+
+  //   return () => {
+  //     document.removeEventListener("mouseup", handleUp);
+  //   };
+  // }, [showRightNav]);
 
   return (
     <div className="w-full h-screen bg-body">
@@ -36,14 +115,19 @@ function App() {
           <Droppable
             types={['components']} // <= allowed drop types
             onDrop={onDrop}>
-            {/* <DraggableWhitespace
-              coors={coors}
-              setCoors={setCoors}
-              coorRatio={coorRatio}
-              setRatio={setRatio}
-              updateCoors={updateCoors}
-            ></DraggableWhitespace> */}
-            <div className='w-full bg-transparent' style={{ height: 'calc(100vh - 99.6px)' }}></div>
+            <Whitespace
+              showRightNav={showRightNav}
+              data={data}
+              setData={setData}
+              update={update}
+              updateElement={updateElement}
+              // coors={coors}
+              // setCoors={setCoors}
+              // coorRatio={coorRatio}
+              // setRatio={setRatio}
+              // updateCoors={updateCoors}
+            ></Whitespace>
+            {/* <div className='w-full bg-transparent' style={{ height: 'calc(100vh - 99.6px)' }}></div> */}
           </Droppable>
         </div>
         <RightNav show={showRightNav} elementSelected={elementSelected} />
