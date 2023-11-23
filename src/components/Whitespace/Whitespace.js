@@ -5,29 +5,68 @@ import Element from "./Element";
 function Whitespace(props) {
     const [update2, setUpdate2] = useState(0);
 
-    const renderedElements = props.data.map(typeBlock => (
+    const [selected, setSelected] = useState()
+
+    const renderedElements = props.data?.map(typeBlock => (
         <>
-            {typeBlock.list.map((element, index) => (
-                <Element key={index} coor={element} updateCoors={props.updateElement} />
+            {typeBlock.list?.length > 0 && typeBlock.list?.map((element, index) => (
+                <Element type={element.type} key={index} coor={element} updateCoors={props.updateElement} />
             ))}
         </>
     ))
     useEffect(() => {
         setUpdate2(prev => prev+1);
     },[props.update])
+
+    useEffect(() => {
+      document.addEventListener("keydown", (e) => {
+        if(e.key === "Backspace")
+        {
+          props.data?.map((typeBlock, idx1) => {
+            typeBlock.list?.map((item, idx2) => {
+              if(item.isSelected)
+              {
+                removeElement(idx1, idx2)
+              }
+            })
+          })
+          
+        }
+      })
+
+      return () => {
+        document.removeEventListener("keydown", (e) => {
+          if(e.key === "Backspace")
+        {
+          props.data?.map((typeBlock, idx1) => {
+            typeBlock.list?.map((item, idx2) => {
+              if(item.isSelected)
+              {
+                removeElement(idx1, idx2)
+              }
+            })
+          })
+          
+        }
+        })
+      }
+    }, [props.data])
+
+    const removeElement = (idx1, idx2) => {
+      var data = props.data;
+      data[idx1]?.list?.splice(idx2,1)
+      props.setData(data)
+    }
     
   return (
     props.showRightNav && (
       <div
-        className="w-full bg-repeat whitespace" 
-        style={{
-            backgroundImage: `url("https://img.freepik.com/premium-vector/grid-stripe-seamless-pattern_97886-21859.jpg")`,
-            backgroundSize: '25%',
-        }}
+        className="w-full bg-repeat whitespace overflow-hidden" 
+        id='boxDrop'
         >
         <div className="w-full" style={{
           height: "calc(100vh - 99.6px)",
-          backgroundColor: 'rgba(255,255,255,.8)'
+          backgroundColor: '#F9F7F5'
         }}>
                 {renderedElements}
         </div>
