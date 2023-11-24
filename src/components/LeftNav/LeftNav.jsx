@@ -3,14 +3,14 @@ import { Button, Checkbox, Label, Modal } from "flowbite-react";
 import React, { useState } from "react";
 import Layer from "./Layer";
 
-const LeftNav = ({ setShowRightNav }) => {
+const LeftNav = ({ setShowRightNav, setDefaultPosition }) => {
     const [showModal, setShowModal] = useState(false)
 
     return (
         <>
-            <div className="w-[13%] h-full bg-white">
+            <div className="w-[13%] h-full bg-white z-30 shadow-[1px_0_30px_rgba(0,0,0,0.2)]">
                 <p className="w-full px-4 py-2 text-bar text-center font-semibold text-lg">Page</p>
-                <Layer setShowRightNav={setShowRightNav} />
+                <Layer setShowRightNav={setShowRightNav} setDefaultPosition={setDefaultPosition} />
                 <div className="w-full px-4 py-2" onClick={() => setShowModal(true)}>
                     <div className="w-full bg-yellow opacity-50 py-[3px] rounded-lg flex justify-center items-center cursor-pointer">
                         <Plus size={18} color='black' />

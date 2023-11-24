@@ -261,12 +261,12 @@ function Box(props) {
   return (
     <div
       ref={ref}
-      className={`text-center bg-blue-400 box ${
+      className={` bg-white border-[1px] border-black relative box ${
         props.coor.isSelected && "box-selected"
       }`}
       style={style}
     >
-      New {props.coor.type}
+      <span className="text-black absolute -top-6 left-0 w-full truncate text-left">New {props.coor.type}</span>
       {props.coor.isSelected && (
         <>
           {/* Bar resizer */}

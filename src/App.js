@@ -17,20 +17,24 @@ function App() {
   
   const [elementSelected, setElementSelected] = useState([]);
 
+  const [defaultPosition, setDefaultPosition] = useState({
+    x: 100,
+    y: 100
+  })
+
   const addElement = (typeName) => {
     setData(prev => {
       const newEl = {
         type: typeName,
-        x: 100,
-        y: 100,
-        dw: 60,
-        dh: 60,
-        w: 60,
-        h: 50,
+        x: defaultPosition.x,
+        y: defaultPosition.y,
+        dw: typeName === 'Home' ? 600 : 60,
+        dh: typeName === 'Home' ? 500 : 60,
+        w: typeName === 'Home' ? 600 : 60,
+        h: typeName === 'Home' ? 500 : 50,
         isSelected: false,
-        z: 2,
+        z: typeName === 'Home' ? 2 : 3,
       };
-      console.log(newEl);
       let typeFound = prev.find((type) => type.typeName === typeName);
       // Not found type 
       if (!typeFound) {
@@ -64,7 +68,7 @@ function App() {
           return typeBlock;
         }
         if (syncValues) {
-          typeBlock.list = typeBlock.list.map((el) => {
+          typeBlock.list = typeBlock.list?.map((el) => {
             return { ...el, ...syncValues };
           });
           return typeBlock;
@@ -83,7 +87,6 @@ function App() {
   
   const onDrop = (value) => {
     addElement(value.components);
-
   }
   
   // useEffect(() => {
@@ -110,11 +113,12 @@ function App() {
       <HeadBar />
       <TabBar />
       <div className='w-full flex' style={{ height: 'calc(100% - 99.6px)' }} >
-        <LeftNav setShowRightNav={setShowRightNav}  />
-        <div className='w-[70%] h-full bg-body'>
+        <LeftNav setShowRightNav={setShowRightNav} setDefaultPosition={setDefaultPosition} />
+        <div className='w-[70%] h-full bg-body z-20'>
           <Droppable
             types={['components']} // <= allowed drop types
-            onDrop={onDrop}>
+            onDrop={onDrop}
+            >
             <Whitespace
               showRightNav={showRightNav}
               data={data}
